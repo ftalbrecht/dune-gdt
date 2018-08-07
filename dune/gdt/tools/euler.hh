@@ -373,14 +373,31 @@ public:
     return dim_switch<>::eigenvectors_inv_flux_jacobi_matrix(gamma_, conservative_variables, normal);
   }
 
+private:
   /**
    * \sa [Dolejsi, Feistauer, 2016, p. 403, (8.7)] for the 2d case
    */
-  R speed_of_sound_from_conservative(const FieldVector<R, m>& conservative_variables) const
+  template <class VectorType>
+  R compute_speed_of_sound_from_conservative(const VectorType& conservative_variables) const
   {
     const auto rho = density_from_conservative(conservative_variables);
     const auto p = pressure_from_conservative(conservative_variables);
     return std::sqrt((gamma_ * p) / rho);
+  }
+
+public:
+  R speed_of_sound_from_conservative(const FieldVector<R, m>& conservative_variables) const
+  {
+    return compute_speed_of_sound_from_conservative(conservative_variables);
+  }
+
+  template <class V>
+  R speed_of_sound_from_conservative(const XT::LA::VectorInterface<V>& conservative_variables) const
+  {
+    DUNE_THROW_IF(conservative_variables.size() != m,
+                  XT::Common::Exceptions::shapes_do_not_match,
+                  "conservative_variables.size() = " << conservative_variables.size() << "\n   m = " << m);
+    return compute_speed_of_sound_from_conservative(conservative_variables);
   }
 
   /**
