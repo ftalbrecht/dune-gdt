@@ -41,20 +41,20 @@ protected:
 
 public:
   LinearTransportExplicitFvTest(const size_t num_refinements = 3,
-                                const size_t num_additional_refinements_for_reference = 4)
-    : Problem(new LinearTransportProblem<G>())
-    , BaseType(Problem::access().T_end,
-               num_refinements,
-               num_additional_refinements_for_reference,
-               [&](const auto& solution, const auto& prefix) {
-                 for (size_t ii = 0; ii < this->visualization_steps_; ++ii) {
-                   const double time = ii * (this->T_end_ / this->visualization_steps_);
-                   const auto u_t = solution.evaluate(time);
-                   make_discrete_function(solution.space().spatial_space(), u_t)
-                       .visualize(prefix + "_solution_" + XT::Common::to_string(ii));
-                 }
-               })
-    , visualization_steps_(0)
+                                const size_t num_additional_refinements_for_reference = 1) // Not exact, but enough.
+      : Problem(new LinearTransportProblem<G>()),
+        BaseType(Problem::access().T_end,
+                 num_refinements,
+                 num_additional_refinements_for_reference,
+                 [&](const auto& solution, const auto& prefix) {
+                   for (size_t ii = 0; ii < this->visualization_steps_; ++ii) {
+                     const double time = ii * (this->T_end_ / this->visualization_steps_);
+                     const auto u_t = solution.evaluate(time);
+                     make_discrete_function(solution.space().spatial_space(), u_t)
+                         .visualize(prefix + "_solution_" + XT::Common::to_string(ii));
+                   }
+                 }),
+        visualization_steps_(0)
   {
   }
 
