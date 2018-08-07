@@ -72,7 +72,7 @@ public:
 
   using I = XT::Grid::extract_intersection_t<AGV>;
   using BoundaryTreatmentByCustomNumericalFluxOperatorType =
-      LocalAdvectionFvBoundaryOperatorByCustomNumericalFlux<I, SV, SGV, m, SF, RF, RGV, RV>;
+      LocalAdvectionFvBoundaryTreatmentByCustomNumericalFluxOperator<I, SV, SGV, m, SF, RF, RGV, RV>;
 
   using typename BaseType::SourceSpaceType;
   using typename BaseType::RangeSpaceType;
@@ -125,7 +125,7 @@ public:
                                                                boundary_treatment_parameter_type),
         filter.copy());
     return *this;
-  } // ... append(...)
+  }
 
   /// \}
 
