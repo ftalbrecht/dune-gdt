@@ -14,10 +14,13 @@
 
 #include <dune/xt/common/fvector.hh>
 #include <dune/xt/common/fmatrix.hh>
+#include <dune/xt/la/container/vector-interface.hh>
 #include <dune/xt/grid/type_traits.hh>
 #include <dune/xt/functions/interfaces/grid-function.hh>
 #include <dune/xt/functions/base/sliced.hh>
 #include <dune/xt/functions/base/transformed.hh>
+
+#include <dune/gdt/exceptions.hh>
 
 namespace Dune {
 namespace GDT {
@@ -42,6 +45,30 @@ public:
    */
   XT::Common::FieldVector<R, m> to_primitive(const FieldVector<R, m>& conservative_variables) const
   {
+    // extract
+    const auto& rho = conservative_variables[0];
+    FieldVector<R, d> v;
+    for (size_t ii = 0; ii < d; ++ii)
+      v[ii] = conservative_variables[ii + 1] / rho;
+    const auto& e = conservative_variables[m - 1];
+    // convert
+    XT::Common::FieldVector<R, m> primitive_variables;
+    // * density
+    primitive_variables[0] = rho;
+    // * velocity
+    for (size_t ii = 0; ii < d; ++ii)
+      primitive_variables[ii + 1] = v[ii];
+    // * pressure
+    primitive_variables[m - 1] = (gamma_ - 1.) * (e - 0.5 * rho * v.two_norm2());
+    return primitive_variables;
+  }
+
+  template <class V>
+  XT::Common::FieldVector<R, m> to_primitive(const XT::LA::VectorInterface<V>& conservative_variables) const
+  {
+    DUNE_THROW_IF(conservative_variables.size() != m,
+                  XT::Common::Exceptions::shapes_do_not_match,
+                  "conservative_variables.size() = " << conservative_variables.size() << "\n   m = " << m);
     // extract
     const auto& rho = conservative_variables[0];
     FieldVector<R, d> v;
@@ -225,6 +252,21 @@ public:
   XT::Common::FieldVector<R, m> flux_at_impermeable_walls(const FieldVector<R, m>& conservative_variables,
                                                           const FieldVector<D, d>& normal) const
   {
+    const auto pressure = to_primitive(conservative_variables)[m - 1];
+    const auto tmp = normal * pressure;
+    XT::Common::FieldVector<R, m> ret(0.);
+    for (size_t ii = 0; ii < d; ++ii)
+      ret[ii + 1] = tmp[ii];
+    return ret;
+  } // ... flux_at_impermeable_walls(...)
+
+  template <class V, class D>
+  XT::Common::FieldVector<R, m> flux_at_impermeable_walls(const XT::LA::VectorInterface<V>& conservative_variables,
+                                                          const FieldVector<D, d>& normal) const
+  {
+    DUNE_THROW_IF(conservative_variables.size() != m,
+                  XT::Common::Exceptions::shapes_do_not_match,
+                  "conservative_variables.size() = " << conservative_variables.size() << "\n   m = " << m);
     const auto pressure = to_primitive(conservative_variables)[m - 1];
     const auto tmp = normal * pressure;
     XT::Common::FieldVector<R, m> ret(0.);
