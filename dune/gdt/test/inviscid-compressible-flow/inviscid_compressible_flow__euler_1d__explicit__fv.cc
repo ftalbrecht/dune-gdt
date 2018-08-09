@@ -81,7 +81,7 @@ public:
 
   std::vector<std::string> quantities() const override final
   {
-    return {"rel mass conserv.  error"}; // <- This is on purpose, see column header formatting in ConvergenceStudy.
+    return {"rel mass conserv   error"}; // <- This is on purpose, see column header formatting in ConvergenceStudy.
   }
 
   virtual std::map<std::string, std::map<std::string, double>>
@@ -97,7 +97,7 @@ public:
     while (!actual_quantities.empty()) {
       const auto id = actual_quantities.back();
       actual_quantities.pop_back();
-      if (id == "rel mass conserv.  error") {
+      if (id == "rel mass conserv   error") {
         const auto compute_mass = [&](const auto& vec) {
           const auto func = make_discrete_function(space, vec);
           const auto density = XT::Functions::make_sliced_function<1>(func, {0}, "density");
@@ -111,7 +111,7 @@ public:
         for (size_t ii = 1; ii < u.length(); ++ii)
           relative_mass_conservation_error = std::max(
               relative_mass_conservation_error, std::abs(initial_mass - compute_mass(u[ii].vector())) / initial_mass);
-        data["quantity"]["rel mass conserv.  error"] = relative_mass_conservation_error;
+        data["quantity"]["rel mass conserv   error"] = relative_mass_conservation_error;
       } else
         DUNE_THROW(XT::Common::Exceptions::wrong_input_given,
                    "I do not know how to compute the quantity '" << id << "'!");
@@ -154,7 +154,7 @@ protected:
                                                flux(),
                                                /*boundary_data_range=*/{{0.5, 0., 0.4}, {1.5, 0.5, 0.4}});
     else
-      return BaseType::estimate_dt(space);
+      return estimate_dt_for_hyperbolic_system(space.grid_view(), make_initial_values(space), flux());
   } // ... estimate_dt(...)
 
   GP make_initial_grid() override final
@@ -355,7 +355,7 @@ TEST_F(InviscidCompressibleFlow1dEulerExplicitFvTest, impermeable_walls_by_invis
 TEST_F(InviscidCompressibleFlow1dEulerExplicitFvTest,
        inflow_from_the_left_by_heuristic_euler_treatment_impermeable_wall_right)
 {
-  this->T_end_ = 2.5;
+  this->T_end_ = 2; // We need more time to hit the right wall
   this->set_numerical_flux("vijayasundaram");
   this->boundary_treatment = "inflow_from_the_left_by_heuristic_euler_treatment_impermeable_wall_right";
   this->run();
