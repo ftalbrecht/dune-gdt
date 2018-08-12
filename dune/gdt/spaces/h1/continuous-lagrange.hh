@@ -44,7 +44,7 @@ namespace GDT {
  *
  * \sa make_local_lagrange_finite_element
  */
-template <class GV, , class R = double>
+template <class GV, class R = double>
 class ContinuousLagrangeSpace : public SpaceInterface<GV, 1, 1, R>
 {
   using ThisType = ContinuousLagrangeSpace<GV, R>;
@@ -160,7 +160,7 @@ private:
  * \sa ContinuousLagrangeSpace
  */
 template <class GV, class R = double>
-ContinuousLagrangeSpace<GridView<GV>, R> make_continuous_lagrange_space(GridView<GV> grid_view, const ind order)
+ContinuousLagrangeSpace<GridView<GV>, R> make_continuous_lagrange_space(GridView<GV> grid_view, const int order)
 {
   return ContinuousLagrangeSpace<GridView<GV>, R>(grid_view, order);
 }
