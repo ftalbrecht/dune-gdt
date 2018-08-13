@@ -158,12 +158,12 @@ public:
     auto range_function = make_discrete_function(range_space_, range);
     // set up the actual operator
     auto localizable_op = make_localizable_operator(assembly_grid_view_, source_function, range_function);
-    localizable_op.append(LocalAdvectionFvCouplingOperator<I, SV, SGV, m, SF, RF, RGV, RV>(numerical_flux_),
     // contributions from inner intersections
+    localizable_op.append(LocalAdvectionFvCouplingOperator<I, SV, SGV, m, SF, RF, RGV, RV>(*numerical_flux_),
                           param,
                           XT::Grid::ApplyOn::InnerIntersectionsOnce<AGV>());
     // contributions from periodic boundaries
-    localizable_op.append(LocalAdvectionFvCouplingOperator<I, SV, SGV, m, SF, RF, RGV, RV>(numerical_flux_),
+    localizable_op.append(LocalAdvectionFvCouplingOperator<I, SV, SGV, m, SF, RF, RGV, RV>(*numerical_flux_),
                           param,
                           *(XT::Grid::ApplyOn::PeriodicBoundaryIntersectionsOnce<AGV>() && !(*periodicity_exception_)));
     // contributions from other boundaries by custom numerical flux
