@@ -178,9 +178,33 @@ public:
     return ret;
   }
 
+  virtual ConstLincombOperatorType operator+(const ConstLincombOperatorType& other) const
+  {
+    ConstLincombOperatorType ret(this->source_space(), this->range_space());
+    ret.add(*this, 1.);
+    ret.add(other, 1.);
+    return ret;
+  }
+
+  virtual ConstLincombOperatorType operator+(const LincombOperatorType& other) const
+  {
+    ConstLincombOperatorType ret(this->source_space(), this->range_space());
+    ret.add(*this, 1.);
+    ret.add(other, 1.);
+    return ret;
+  }
+
   virtual ConstLincombOperatorType operator+(const ThisType& other) const
   {
     ConstLincombOperatorType ret(this->source_space(), this->range_space());
+    ret.add(*this, 1.);
+    ret.add(other, 1.);
+    return ret;
+  }
+
+  virtual LincombOperatorType operator+(LincombOperatorType& other)
+  {
+    LincombOperatorType ret(this->source_space(), this->range_space());
     ret.add(*this, 1.);
     ret.add(other, 1.);
     return ret;
@@ -194,9 +218,33 @@ public:
     return ret;
   }
 
+  virtual ConstLincombOperatorType operator-(const ConstLincombOperatorType& other) const
+  {
+    ConstLincombOperatorType ret(this->source_space(), this->range_space());
+    ret.add(*this, 1.);
+    ret.add(other, -1.);
+    return ret;
+  }
+
+  virtual ConstLincombOperatorType operator-(const LincombOperatorType& other) const
+  {
+    ConstLincombOperatorType ret(this->source_space(), this->range_space());
+    ret.add(*this, 1.);
+    ret.add(other, -1.);
+    return ret;
+  }
+
   virtual ConstLincombOperatorType operator-(const ThisType& other) const
   {
     ConstLincombOperatorType ret(this->source_space(), this->range_space());
+    ret.add(*this, 1.);
+    ret.add(other, -1.);
+    return ret;
+  }
+
+  virtual LincombOperatorType operator-(LincombOperatorType& other)
+  {
+    LincombOperatorType ret(this->source_space(), this->range_space());
     ret.add(*this, 1.);
     ret.add(other, -1.);
     return ret;
