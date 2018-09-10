@@ -217,6 +217,7 @@ public:
    */
   virtual ThisType& assemble(const bool /*use_tbb*/ = false)
   {
+    return *this;
   }
 
   /// \name These methods should be implemented and define the functionality of the operator.
