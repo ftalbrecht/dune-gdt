@@ -62,19 +62,20 @@ public:
 
   using BaseType::apply;
 
-  void apply(const VectorType& source, VectorType& range, const XT::Common::Parameter& /*param*/ = {}) const
+  void
+  apply(const VectorType& source, VectorType& range, const XT::Common::Parameter& /*param*/ = {}) const override final
   {
     DUNE_THROW_IF(!space_.contains(source), Exceptions::operator_error, "");
     DUNE_THROW_IF(!space_.contains(range), Exceptions::operator_error, "");
     range = source;
   }
 
-  std::vector<std::string> invert_options() const
+  std::vector<std::string> invert_options() const override final
   {
-    return {"inverse"};
+    return {"identity"};
   }
 
-  XT::Common::Configuration invert_options(const std::string& type) const
+  XT::Common::Configuration invert_options(const std::string& type) const override final
   {
     DUNE_THROW_IF(type != this->invert_options().at(0), Exceptions::operator_error, "type = " << type);
     return {{"type", type}};
@@ -85,7 +86,7 @@ public:
   void apply_inverse(const VectorType& range,
                      VectorType& source,
                      const XT::Common::Configuration& opts,
-                     const XT::Common::Parameter& /*param*/ = {}) const
+                     const XT::Common::Parameter& /*param*/ = {}) const override final
   {
     DUNE_THROW_IF(!space_.contains(range), Exceptions::operator_error, "");
     DUNE_THROW_IF(!space_.contains(source), Exceptions::operator_error, "");
@@ -95,12 +96,12 @@ public:
     source = range;
   }
 
-  std::vector<std::string> jacobian_options() const
+  std::vector<std::string> jacobian_options() const override final
   {
-    return {"self"};
+    return {"identity"};
   }
 
-  XT::Common::Configuration jacobian_options(const std::string& type) const
+  XT::Common::Configuration jacobian_options(const std::string& type) const override final
   {
     DUNE_THROW_IF(type != this->jacobian_options().at(0), Exceptions::operator_error, "type = " << type);
     return {{"type", type}};
@@ -111,7 +112,7 @@ public:
   void jacobian(const VectorType& /*source*/,
                 MatrixOperatorType& jacobian_op,
                 const XT::Common::Configuration& opts,
-                const XT::Common::Parameter& /*param*/ = {}) const
+                const XT::Common::Parameter& /*param*/ = {}) const override final
   {
     DUNE_THROW_IF(jacobian_op.source_space().mapper().size() != space_.mapper().size(), Exceptions::operator_error, "");
     DUNE_THROW_IF(jacobian_op.range_space().mapper().size() != space_.mapper().size(), Exceptions::operator_error, "");
@@ -143,6 +144,13 @@ IdentityOperator<typename XT::LA::Container<F>::MatrixType, GV, r, rC>
 make_identity_operator(const SpaceInterface<GV, r, rC, F>& space)
 {
   return IdentityOperator<typename XT::LA::Container<F>::MatrixType, GV, r, rC>(space);
+}
+
+
+template <class M, class GV, size_t r, size_t rC>
+IdentityOperator<M, GV, r, rC> make_identity_operator(const OperatorInterface<M, GV, r, rC, r, rC, GV>& op)
+{
+  return IdentityOperator<M, GV, r, rC>(op.source_space());
 }
 
 
