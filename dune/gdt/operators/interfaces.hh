@@ -423,7 +423,7 @@ invert_options(some_type).get<std::string>("type") == some_type
         }
         DUNE_THROW_IF(l >= max_iter,
                       Exceptions::operator_error,
-                      "max iterations " << max_iter << " reached!\n   |residual|_l22 = " << res << "\n   opts:\n"
+                      "max iterations " << max_iter << " reached!\n   |residual|_l2 = " << res << "\n   opts:\n"
                                         << opts);
         logger.debug() << "       computing jacobi matrix ... " << std::flush;
         timer.reset();
